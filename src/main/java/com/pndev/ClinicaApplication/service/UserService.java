@@ -38,4 +38,11 @@ public class UserService {
                         "User not found with email: " + email
                 ));
     }
+    public User findById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new DomainException(
+                        DomainException.ErrorType.USER_NOT_FOUND,
+                        "User not found with id: " + id
+                ));
+    }
 }
