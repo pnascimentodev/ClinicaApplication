@@ -19,6 +19,7 @@ public class PatientService {
         this.patientRepository = patientRepository;
         this.userService = userService;
         this.userRepository = userRepository;
+
     }
 
     public Patient registerPatient(PatientRequestDTO dto) {
@@ -27,7 +28,6 @@ public class PatientService {
                         DomainException.ErrorType.USER_NOT_FOUND,
                         "User not found with id: " + dto.getUserId()
                 ));
-
         Patient patient = new Patient();
         patient.setUser(user);
         patient.setCpf(dto.getCpf());
@@ -35,4 +35,32 @@ public class PatientService {
 
         return patientRepository.save(patient);
     }
+
+    public Patient findById(Long id) {
+        return patientRepository.findById(id)
+                .orElseThrow(() -> new DomainException(
+                        DomainException.ErrorType.USER_NOT_FOUND,
+                        "Patient not found with id: " + id
+                ));
+    }
+    public Patient findByCpf(String cpf) {
+        return patientRepository.findByCpf(cpf)
+                .orElseThrow(() -> new DomainException(
+                        DomainException.ErrorType.USER_NOT_FOUND,
+                        "Patient not found with CPF: " + cpf
+                ));
+    }
+    public void deletePatient(Long id) {
+        Patient patient = findById(id);
+        patientRepository.delete(patient);
+    }
+
+    public void updatePatient(Long id, PatientRequestDTO dto) {
+        Patient patient = findById(id);
+        patient.setCpf(dto.getCpf());
+        patient.setPhone(dto.getPhone());
+        patientRepository.save(patient);
+    }
+
+
 }

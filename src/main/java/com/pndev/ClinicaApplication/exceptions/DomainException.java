@@ -3,7 +3,8 @@ package com.pndev.ClinicaApplication.exceptions;
 public class DomainException extends RuntimeException {
 
     public enum ErrorType{
-        USER_NOT_FOUND
+        USER_NOT_FOUND,
+        APPOINTMENT_NOT_FOUND,
     }
 
     private final ErrorType errorType;
