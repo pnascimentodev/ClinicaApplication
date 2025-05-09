@@ -45,4 +45,19 @@ public class UserService {
                         "User not found with id: " + id
                 ));
     }
+
+    public User userUpdate(Long id, UserRegisterDTO dto) {
+        User user = findById(id);
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setRole(dto.getRole());
+
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(Long id) {
+        User user = findById(id);
+        userRepository.delete(user);
+    }
 }
