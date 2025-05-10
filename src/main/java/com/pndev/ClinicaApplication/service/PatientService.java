@@ -39,28 +39,32 @@ public class PatientService {
     public Patient findById(Long id) {
         return patientRepository.findById(id)
                 .orElseThrow(() -> new DomainException(
-                        DomainException.ErrorType.USER_NOT_FOUND,
+                        DomainException.ErrorType.PATIENT_NOT_FOUND,
                         "Patient not found with id: " + id
                 ));
     }
+
     public Patient findByCpf(String cpf) {
         return patientRepository.findByCpf(cpf)
                 .orElseThrow(() -> new DomainException(
-                        DomainException.ErrorType.USER_NOT_FOUND,
+                        DomainException.ErrorType.PATIENT_NOT_FOUND,
                         "Patient not found with CPF: " + cpf
                 ));
+    }
+
+    public void updateName(Long id, String name) {
+        Patient patient = findById(id);
+        patient.getUser().setName(name);
+        userRepository.save(patient.getUser());
+    }
+
+    public void updatePatientPhone(Long id, String phone) {
+        Patient patient = findById(id);
+        patient.setPhone(phone);
+        patientRepository.save(patient);
     }
     public void deletePatient(Long id) {
         Patient patient = findById(id);
         patientRepository.delete(patient);
     }
-
-    public void updatePatient(Long id, PatientRequestDTO dto) {
-        Patient patient = findById(id);
-        patient.setCpf(dto.getCpf());
-        patient.setPhone(dto.getPhone());
-        patientRepository.save(patient);
-    }
-
-
 }
