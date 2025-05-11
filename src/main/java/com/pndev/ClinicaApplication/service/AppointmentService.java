@@ -57,11 +57,27 @@ public class AppointmentService {
     }
 
     public List<Appointment> getAppointmentsByDoctorId(Long doctorId) {
-        return appointmentRepository.findByDoctorId(doctorId);
+        List<Appointment> appointments = appointmentRepository.findByDoctorId(doctorId);
+
+        if (appointments.isEmpty()) {
+            throw new DomainException(
+                    DomainException.ErrorType.APPOINTMENT_NOT_FOUND,
+                    "No appointments found for doctor with id: " + doctorId
+            );
+        }
+        return appointments;
     }
 
     public List<Appointment> getAppointmentsByPatientId(Long patientId) {
-        return appointmentRepository.findByPatientId(patientId);
+        List<Appointment> appointments = appointmentRepository.findByPatientId(patientId);
+
+        if (appointments.isEmpty()) {
+            throw new DomainException(
+                    DomainException.ErrorType.APPOINTMENT_NOT_FOUND,
+                    "No appointments found for patient with id: " + patientId
+            );
+        }
+        return appointments;
     }
 
     public Appointment updateAppointmentStatus(Long appointmentId, AppointmentStatus status) {
