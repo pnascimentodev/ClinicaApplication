@@ -11,6 +11,8 @@ import com.pndev.ClinicaApplication.repository.DoctorRepository;
 import com.pndev.ClinicaApplication.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
@@ -52,6 +54,14 @@ public class AppointmentService {
                         DomainException.ErrorType.APPOINTMENT_NOT_FOUND,
                         "Appointment not found with id: " + appointmentId
                 ));
+    }
+
+    public List<Appointment> getAppointmentsByDoctorId(Long doctorId) {
+        return appointmentRepository.findByDoctorId(doctorId);
+    }
+
+    public List<Appointment> getAppointmentsByPatientId(Long patientId) {
+        return appointmentRepository.findByPatientId(patientId);
     }
 
     public Appointment updateAppointmentStatus(Long appointmentId, AppointmentStatus status) {
