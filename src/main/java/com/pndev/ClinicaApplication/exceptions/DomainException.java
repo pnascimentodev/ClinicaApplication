@@ -5,7 +5,7 @@ public class DomainException extends RuntimeException {
     public enum ErrorType{
         USER_NOT_FOUND,
         APPOINTMENT_NOT_FOUND,
-            DOCTOR_NOT_FOUND,
+        DOCTOR_NOT_FOUND,
         PATIENT_NOT_FOUND,
     }
 

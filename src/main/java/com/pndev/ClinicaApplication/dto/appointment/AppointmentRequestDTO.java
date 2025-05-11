@@ -1,20 +1,34 @@
 package com.pndev.ClinicaApplication.dto.appointment;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class AppointmentRequestDTO {
-    private LocalDateTime dateTime;
+    private LocalDate date;
+    private LocalTime time;
     private Long doctorId;
     private Long patientId;
 
     public AppointmentRequestDTO() {}
-    public AppointmentRequestDTO(LocalDateTime dateTime, Long doctorId, Long patientId) {}
-
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public AppointmentRequestDTO(LocalDate date, LocalTime time, Long doctorId, Long patientId) {
+        this.date = date;
+        this.time = time;
+        this.doctorId = doctorId;
+        this.patientId = patientId;
     }
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+
+    public LocalDate getDate() {
+        return date;
+    }
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+    public LocalTime getTime() {
+        return time;
+    }
+    public void setTime(LocalTime time) {
+        this.time = time;
     }
     public Long getDoctorId() {
         return doctorId;
@@ -27,5 +41,9 @@ public class AppointmentRequestDTO {
     }
     public void setPatientId(Long patientId) {
         this.patientId = patientId;
+    }
+
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.of(this.date, this.time);
     }
 }
