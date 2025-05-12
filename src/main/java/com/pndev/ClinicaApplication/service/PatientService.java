@@ -39,6 +39,13 @@ public class PatientService {
         return patientRepository.save(patient);
     }
 
+    public Patient updatePatient(Long id, PatientRequestDTO patientRequestDTO) {
+        Patient patient = findById(id);
+        patient.setCpf(patientRequestDTO.getCpf());
+        patient.setPhone(patientRequestDTO.getPhone());
+        return patientRepository.save(patient);
+    }
+
     public Patient findById(Long id) {
         return patientRepository.findById(id)
                 .orElseThrow(() -> new DomainException(
@@ -53,14 +60,6 @@ public class PatientService {
                         DomainException.ErrorType.PATIENT_NOT_FOUND,
                         "Patient not found with CPF: " + cpf
                 ));
-    }
-
-    public void updatePatient(Long id, PatientRequestDTO patientRequestDTO) {
-        Patient patient = findById(id);
-        patient.setCpf(patientRequestDTO.getCpf());
-        patient.setPhone(patientRequestDTO.getPhone());
-        patient.setUser(userService.findById(patientRequestDTO.getUserId()));
-        patientRepository.save(patient);
     }
 
     public void deletePatient(Long id) {
