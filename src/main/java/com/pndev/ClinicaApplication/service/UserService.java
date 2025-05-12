@@ -22,10 +22,17 @@ public class UserService {
     }
 
     public User register(UserRegisterDTO dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new DomainException(
+                    DomainException.ErrorType.USER_ALREADY_EXISTS,
+                    "User already exists with email: " + dto.getEmail()
+            );
+        }
+
         User user = new User();
         user.setName(dto.getName());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setRole(dto.getRole());
 
         return userRepository.save(user);

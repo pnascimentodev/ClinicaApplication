@@ -7,6 +7,7 @@ public class DomainException extends RuntimeException {
         APPOINTMENT_NOT_FOUND,
         DOCTOR_NOT_FOUND,
         PATIENT_NOT_FOUND,
+        USER_ALREADY_EXISTS
     }
 
     private final ErrorType errorType;
