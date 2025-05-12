@@ -38,11 +38,23 @@ public class AppointmentService {
                         DomainException.ErrorType.PATIENT_NOT_FOUND,
                         "Patient not found with id: " + dto.getPatientId()
                 ));
+        if(appointmentRepository.existsByDoctorIdAndDateTime(dto.getDoctorId(), dto.getDateTime())) {
+            throw new DomainException(
+                    DomainException.ErrorType.APPOINTMENT_CONFLICT,
+                    "Appointment conflict: Doctor is already booked at this time."
+            );
+        }
+        if (appointmentRepository.existsByPatientIdAndDateTime(dto.getPatientId(), dto.getDateTime())) {
+            throw new DomainException(
+                    DomainException.ErrorType.APPOINTMENT_CONFLICT,
+                    "Appointment conflict: Patient already has an appointment at this time."
+            );
+        }
 
         Appointment appointment = new Appointment();
-        appointment.setDateTime(dto.getDateTime());
         appointment.setDoctor(doctor);
         appointment.setPatient(patient);
+        appointment.setDateTime(dto.getDateTime());
         appointment.setStatus(AppointmentStatus.PENDING);
 
         return appointmentRepository.save(appointment);
@@ -89,22 +101,69 @@ public class AppointmentService {
         appointment.setStatus(status);
         return appointmentRepository.save(appointment);
     }
-    public Appointment updateAppointmentDateTime(Long appointmentId, AppointmentRequestDTO dto) {
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new DomainException(
-                        DomainException.ErrorType.APPOINTMENT_NOT_FOUND,
-                        "Appointment not found with id: " + appointmentId
-                ));
+
+    public Appointment doctorReschedule(Long appointmentId, AppointmentRequestDTO dto) {
+        Appointment appointment = getAppointmentById(appointmentId);
+
+        if (!appointment.getDoctor().getId().equals(dto.getDoctorId()) ||
+            !appointment.getPatient().getId().equals(dto.getPatientId())){
+            throw new DomainException(
+                    DomainException.ErrorType.UNAUTHORIZED_ACTION,
+                    "You are not authorized to reschedule this appointment."
+            );
+        }
+        if (appointmentRepository.existsByDoctorIdAndDateTime(dto.getDoctorId(), dto.getDateTime()) ||
+                appointmentRepository.existsByPatientIdAndDateTime(dto.getPatientId(), dto.getDateTime())) {
+            throw new DomainException(
+                    DomainException.ErrorType.APPOINTMENT_CONFLICT,
+                    "New date/time is not available."
+            );
+        }
+
         appointment.setDateTime(dto.getDateTime());
         return appointmentRepository.save(appointment);
     }
 
-    public void deleteAppointment(Long appointmentId) {
-        Appointment appointment = appointmentRepository.findById(appointmentId)
+    public Appointment patientReschedule(Long appointmentId, AppointmentRequestDTO dto) {
+        Appointment appointment = getAppointmentById(appointmentId);
+
+        Doctor newDoctor = doctorRepository.findById(dto.getDoctorId())
                 .orElseThrow(() -> new DomainException(
-                        DomainException.ErrorType.APPOINTMENT_NOT_FOUND,
-                        "Appointment not found with id: " + appointmentId
+                        DomainException.ErrorType.DOCTOR_NOT_FOUND,
+                        "Doctor not found with id: " + dto.getDoctorId()
                 ));
+
+        Patient patient = appointment.getPatient();
+
+        if (!patient.getId().equals(dto.getPatientId())) {
+            throw new DomainException(
+                    DomainException.ErrorType.UNAUTHORIZED_ACTION,
+                    "You are not authorized to reschedule this appointment."
+            );
+        }
+
+        if (appointmentRepository.existsByDoctorIdAndDateTime(dto.getDoctorId(), dto.getDateTime()) ||
+        appointmentRepository.existsByPatientIdAndDateTime(dto.getPatientId(), dto.getDateTime())) {
+            throw new DomainException(
+                    DomainException.ErrorType.APPOINTMENT_CONFLICT,
+                    "New date/time is not available."
+            );
+        }
+        appointment.setDoctor(newDoctor);
+        appointment.setDateTime(dto.getDateTime());
+        return appointmentRepository.save(appointment);
+    }
+
+    public void patientCancelAppointment(Long appointmentId, Long patientId) {
+        Appointment appointment = getAppointmentById(appointmentId);
+
+        if (!appointment.getPatient().getId().equals(patientId)) {
+            throw new DomainException(
+                    DomainException.ErrorType.UNAUTHORIZED_ACTION,
+                    "You are not authorized to cancel this appointment."
+            );
+        }
         appointmentRepository.delete(appointment);
     }
+
 }
