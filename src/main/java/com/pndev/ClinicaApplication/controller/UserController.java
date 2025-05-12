@@ -1,8 +1,10 @@
 package com.pndev.ClinicaApplication.controller;
 
 import com.pndev.ClinicaApplication.dto.user.UserRegisterDTO;
+import com.pndev.ClinicaApplication.dto.user.UserResponseDTO;
 import com.pndev.ClinicaApplication.model.User;
 import com.pndev.ClinicaApplication.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,32 +22,33 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> registerUser(@RequestBody UserRegisterDTO dto) {
+    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRegisterDTO dto) {
         User user = userService.register(dto);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return new ResponseEntity<>(UserResponseDTO.fromEntity(user), HttpStatus.CREATED);
     }
 
     @GetMapping("/email")
-    public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
+    public ResponseEntity<UserResponseDTO> getUserByEmail(@Valid @RequestParam String email){
         User user = userService.findByEmail(email);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(UserResponseDTO.fromEntity(user));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
         User user = userService.findById(id);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(UserResponseDTO.fromEntity(user));
+
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserRegisterDTO dto) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserRegisterDTO dto) {
         User updatedUser = userService.userUpdate(id, dto);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(UserResponseDTO.fromEntity(updatedUser));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 }

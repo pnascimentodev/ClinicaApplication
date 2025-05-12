@@ -2,11 +2,21 @@ package com.pndev.ClinicaApplication.dto.user;
 
 
 import com.pndev.ClinicaApplication.model.enums.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public class UserRegisterDTO {
+    @NotBlank
     private String name;
+
+    @NotBlank
+    @Email
     private String email;
+
+    @NotBlank
     private String password;
+
+    @NotBlank
     private Role role;
 
     public UserRegisterDTO() {}
