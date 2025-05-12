@@ -15,56 +15,50 @@ public class DoctorService {
     private final UserService userService;
     private final UserRepository userRepository;
 
+
     public DoctorService(DoctorRepository doctorRepository, UserService userService, UserRepository userRepository) {
         this.doctorRepository = doctorRepository;
         this.userService = userService;
         this.userRepository = userRepository;
+
     }
 
-    public Doctor registerDoctor(DoctorRequestDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new DomainException(
-                        DomainException.ErrorType.USER_NOT_FOUND,
-                        "User not found with id: " + dto.getUserId()
-                ));
+    public Doctor registerDoctor(DoctorRequestDTO doctorRequestDTO) {
+        User user = userService.findById(doctorRequestDTO.getUserId());
+        if (doctorRepository.existsByCrm(doctorRequestDTO.getCrm())) {
+            throw new DomainException(
+                    DomainException.ErrorType.DOCTOR_ALREADY_EXISTS,
+                    "Doctor already exists with CRM: " + doctorRequestDTO.getCrm()
+            );
+        }
+
         Doctor doctor = new Doctor();
+        doctor.setCrm(doctorRequestDTO.getCrm());
+        doctor.setSpecialty(doctorRequestDTO.getSpecialty());
         doctor.setUser(user);
-        doctor.setCrm(dto.getCrm());
-        doctor.setSpecialty(dto.getSpecialty());
 
         return doctorRepository.save(doctor);
     }
 
-    public Doctor findByCrm(String crm) {
-        return doctorRepository.findByCrm(crm)
+    public  Doctor findById(Long id) {
+        return doctorRepository.findById(id)
                 .orElseThrow(() -> new DomainException(
                         DomainException.ErrorType.DOCTOR_NOT_FOUND,
-                        "Doctor not found with CRM: " + crm
+                        "Doctor not found with ID: " + id
                 ));
     }
 
-    public void updateName(Long id, String name) {
-        Doctor doctor = findByCrm(id.toString());
-        doctor.getUser().setName(name);
-        userRepository.save(doctor.getUser());
-    }
-
-    public void updateSpecialty(Long id, String specialty) {
-        Doctor doctor = findByCrm(id.toString());
-        doctor.setSpecialty(specialty);
-        doctorRepository.save(doctor);
-    }
-
-    public void updateCrm(Long id, String crm) {
-        Doctor doctor = findByCrm(id.toString());
-        doctor.setCrm(crm);
-        doctorRepository.save(doctor);
+    public Doctor update(Long id, DoctorRequestDTO doctorRequestDTO) {
+        Doctor doctor = findById(id);
+        doctor.setCrm(doctorRequestDTO.getCrm());
+        doctor.setSpecialty(doctorRequestDTO.getSpecialty());
+        return doctorRepository.save(doctor);
     }
 
     public void deleteDoctor(Long id) {
-        Doctor doctor = findByCrm(id.toString());
+        Doctor doctor = findById(id);
+        User user = doctor.getUser();
         doctorRepository.delete(doctor);
+        userRepository.delete(user);
     }
-
-
 }

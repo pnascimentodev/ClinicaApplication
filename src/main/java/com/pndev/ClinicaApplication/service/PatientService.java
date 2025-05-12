@@ -22,16 +22,19 @@ public class PatientService {
 
     }
 
-    public Patient registerPatient(PatientRequestDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new DomainException(
-                        DomainException.ErrorType.USER_NOT_FOUND,
-                        "User not found with id: " + dto.getUserId()
-                ));
+    public Patient registerPatient(PatientRequestDTO patientRequestDTO) {
+        User user = userService.findById(patientRequestDTO.getUserId());
+        if (patientRepository.existsByCpf(patientRequestDTO.getCpf())) {
+            throw new DomainException(
+                    DomainException.ErrorType.PATIENT_ALREADY_EXISTS,
+                    "Patient already exists with CPF: " + patientRequestDTO.getCpf()
+            );
+        }
+
         Patient patient = new Patient();
+        patient.setCpf(patientRequestDTO.getCpf());
+        patient.setPhone(patientRequestDTO.getPhone());
         patient.setUser(user);
-        patient.setCpf(dto.getCpf());
-        patient.setPhone(dto.getPhone());
 
         return patientRepository.save(patient);
     }
@@ -52,19 +55,19 @@ public class PatientService {
                 ));
     }
 
-    public void updateName(Long id, String name) {
+    public void updatePatient(Long id, PatientRequestDTO patientRequestDTO) {
         Patient patient = findById(id);
-        patient.getUser().setName(name);
-        userRepository.save(patient.getUser());
-    }
-
-    public void updatePatientPhone(Long id, String phone) {
-        Patient patient = findById(id);
-        patient.setPhone(phone);
+        patient.setCpf(patientRequestDTO.getCpf());
+        patient.setPhone(patientRequestDTO.getPhone());
+        patient.setUser(userService.findById(patientRequestDTO.getUserId()));
         patientRepository.save(patient);
     }
+
     public void deletePatient(Long id) {
         Patient patient = findById(id);
+        User user = patient.getUser();
+
         patientRepository.delete(patient);
+        userRepository.delete(user);
     }
 }
