@@ -54,6 +54,12 @@ public class UserService {
     }
 
     public User userUpdate(Long id, UserRegisterDTO dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new DomainException(
+                    DomainException.ErrorType.USER_ALREADY_EXISTS,
+                    "User already exists with email: " + dto.getEmail()
+            );
+        }
         User user = findById(id);
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
