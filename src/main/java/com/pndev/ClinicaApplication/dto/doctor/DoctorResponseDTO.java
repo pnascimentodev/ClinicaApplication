@@ -9,7 +9,7 @@ public record DoctorResponseDTO(
         String crm,
         String specialty
 ) {
-    private DoctorResponseDTO  toDto(Doctor doctor) {
+    public static DoctorResponseDTO toDto(Doctor doctor) {
         return new DoctorResponseDTO(
                 doctor.getId(),
                 doctor.getUser().getName(),
