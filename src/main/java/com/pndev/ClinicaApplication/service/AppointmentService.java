@@ -93,16 +93,20 @@ public class AppointmentService {
     }
 
     public Appointment updateAppointmentStatus(Long appointmentId, AppointmentStatus status) {
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new DomainException(
-                        DomainException.ErrorType.APPOINTMENT_NOT_FOUND,
-                        "Appointment not found with id: " + appointmentId
-                ));
+        Appointment appointment = getAppointmentById(appointmentId);
+
+        if (status == null) {
+            throw new DomainException(
+                    DomainException.ErrorType.INVALID_INPUT,
+                    "Status cannot be null."
+            );
+        }
+
         appointment.setStatus(status);
         return appointmentRepository.save(appointment);
     }
 
-    public Appointment doctorReschedule(Long appointmentId, AppointmentRequestDTO dto) {
+    public Appointment doctorReschedule(Long appointmentId, Long doctorId, AppointmentRequestDTO dto) {
         Appointment appointment = getAppointmentById(appointmentId);
 
         if (!appointment.getDoctor().getId().equals(dto.getDoctorId()) ||
@@ -124,7 +128,7 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    public Appointment patientReschedule(Long appointmentId, AppointmentRequestDTO dto) {
+    public Appointment patientReschedule(Long appointmentId, Long patientId, AppointmentRequestDTO dto) {
         Appointment appointment = getAppointmentById(appointmentId);
 
         Doctor newDoctor = doctorRepository.findById(dto.getDoctorId())

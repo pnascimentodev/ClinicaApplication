@@ -11,7 +11,8 @@ public class DomainException extends RuntimeException {
         DOCTOR_ALREADY_EXISTS,
         PATIENT_ALREADY_EXISTS,
         APPOINTMENT_CONFLICT,
-        UNAUTHORIZED_ACTION
+        UNAUTHORIZED_ACTION,
+        INVALID_INPUT
     }
 
     private final ErrorType errorType;

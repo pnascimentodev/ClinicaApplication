@@ -4,6 +4,8 @@ import com.pndev.ClinicaApplication.model.Appointment;
 import com.pndev.ClinicaApplication.model.enums.AppointmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -15,4 +17,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByStatus(AppointmentStatus status);
 
     List<Appointment> findByDoctorIdAndStatus(Long doctorId, AppointmentStatus status);
+
+    boolean existsByDoctorIdAndDateTime(Long doctorId, LocalDateTime dateTime);
+
+    boolean existsByPatientIdAndDateTime(Long patientId, LocalDateTime dateTime);
 }
