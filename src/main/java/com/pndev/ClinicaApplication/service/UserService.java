@@ -1,5 +1,6 @@
 package com.pndev.ClinicaApplication.service;
 
+import com.pndev.ClinicaApplication.dto.user.UserRegisterDTO;
 import com.pndev.ClinicaApplication.exceptions.DomainException;
 import com.pndev.ClinicaApplication.model.User;
 import com.pndev.ClinicaApplication.model.enums.Role;
@@ -20,20 +21,18 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(String name, String email, String rawPassword, Role role) {
-        if (userRepository.existsByEmail(email)) {
+    public User createUser(UserRegisterDTO dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
             throw new DomainException(
                     DomainException.ErrorType.USER_ALREADY_EXISTS,
-                    "User already exists with email: " + email
+                    "User already exists with email: " + dto.getEmail()
             );
         }
-
         User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(rawPassword));
-        user.setRole(role);
-
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setRole(dto.getRole());
         return userRepository.save(user);
     }
 
