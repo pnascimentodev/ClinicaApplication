@@ -21,7 +21,7 @@ public class PatientController {
         this.userService = userService;
     }
 
-    @PostMapping("/patient/register")
+    @PostMapping("/register")
     public ResponseEntity<PatientResponseDTO> registerPatient(PatientRequestDTO patientRequestDTO) {
         Patient patient = patientService.registerPatient(patientRequestDTO);
         return ResponseEntity.ok(PatientResponseDTO.toDto(patient));
@@ -33,17 +33,18 @@ public class PatientController {
         return ResponseEntity.ok(PatientResponseDTO.toDto(patient));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<PatientResponseDTO> getPatientById(@PathVariable Long id) {
         Patient patient = patientService.findById(id);
         return ResponseEntity.ok(PatientResponseDTO.toDto(patient));
     }
 
-    @GetMapping("/{cpf}")
+    @GetMapping("/cpf/{cpf}")
     public ResponseEntity<PatientResponseDTO> getPatientByCpf(@PathVariable String cpf) {
         Patient patient = patientService.findByCpf(cpf);
         return ResponseEntity.ok(PatientResponseDTO.toDto(patient));
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
