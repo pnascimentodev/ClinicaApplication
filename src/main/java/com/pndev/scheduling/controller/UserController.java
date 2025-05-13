@@ -21,12 +21,12 @@ public class UserController {
     private final JwtService jwtService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtService jwtService) {
         this.userService = userService;
-        this.jwtService = new JwtService();
+        this.jwtService = jwtService;
     }
 
-    @PostMapping("user/register")
+    @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRegisterDTO dto) {
         User user = userService.createUser(dto);
         return new ResponseEntity<>(UserResponseDTO.fromEntity(user), HttpStatus.CREATED);

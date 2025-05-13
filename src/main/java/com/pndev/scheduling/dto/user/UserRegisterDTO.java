@@ -16,7 +16,6 @@ public class UserRegisterDTO {
     @NotBlank
     private String password;
 
-    @NotBlank
     private Role role;
 
     public UserRegisterDTO() {}
