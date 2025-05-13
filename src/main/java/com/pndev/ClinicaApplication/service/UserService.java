@@ -91,4 +91,15 @@ public class UserService {
         User user = findById(id);
         userRepository.delete(user);
     }
+
+    public User authenticate(String email, String rawPassword) {
+        User user = findByEmail(email);
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new DomainException(
+                    DomainException.ErrorType.INVALID_CREDENTIALS,
+                    "Invalid credentials for user: " + email
+            );
+        }
+        return user;
+    }
 }
